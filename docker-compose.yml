@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+
+  mongodb:
+    image: mongo:7
+
+    container_name: mongo-soc
+
+    restart: always
+
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+
+    ports:
+      - "27017:27017"
+
+    volumes:
+      - mongo_data:/data/db
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+
+    container_name: soc-api
+
+    depends_on:
+      - mongodb
+
+    ports:
+      - "3000:3000"
+
+    environment:
+      MONGODB_URI: mongodb://admin:secret@mongodb:27017/soc_lite?authSource=admin
+
+volumes:
+  mongo_data:
